@@ -1,0 +1,13 @@
+{
+    "SRC_SLOT_TAG": "[slot]",
+    "SRC_RANGE_START_TAG": "(",
+    "SRC_RANGE_END_TAG": ")",
+    "SRC_INTENT_TAG": "[intent]",
+    "TGT_SLOT_TAG": "[slot]",
+    "TGT_SEP_TAG": "[slot]",
+    "TGT_INTENT_TAG": "[intent]",
+    "TGT_END_TAG": "</s>",
+    "JOINT_TAG": "=",
+    "SPACE_TAG": " ",
+    "DONTCARE_VALUE": "dontcare"
+}
