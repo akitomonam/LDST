@@ -9,10 +9,12 @@ services:
         BUILDKIT_INLINE_CACHE: "0"
     image: alpaca-lora
     shm_size: '64gb'
-    command: generate.py --load_8bit --base_model $BASE_MODEL --lora_weights 'tloen/alpaca-lora-7b'
+    # command: generate.py --load_8bit --base_model $BASE_MODEL --lora_weights 'tloen/alpaca-lora-7b'
+    tty: true
     restart: unless-stopped
     volumes:
       - alpaca-lora:/root/.cache # Location downloaded weights will be stored
+      - .:/workspace/
     ports:
       - 7860:7860
     deploy:
