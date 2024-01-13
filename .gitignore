@@ -1,2 +1,8 @@
 Data/SGD
 Data/SGD_preprocess
+Data/multiwoz
+Data/DST-as-Prompting
+Data/MULTIWOZ20*
+__MACOSX
+__pycache__
+Checkpoint_files/original
