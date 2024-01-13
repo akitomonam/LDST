@@ -28,6 +28,9 @@ SGD_DATASET_CONFIG = {
     }
 }
 
+INSTRUCTION_PROMPT = "Track the state of the slot and intent in the input dialogue."
+INPUT_PROMPT = "So the state of the slot and intent in the input dialogue is\n"
+
 
 def create_data(data_category, data_category_type, src_schema_filename, tag_filename, src_dialogue_filename_pattern, out_dir):
     os.makedirs(out_dir, exist_ok=True)
@@ -127,8 +130,9 @@ def create_data(data_category, data_category_type, src_schema_filename, tag_file
                             "dialogue_id": d["dialogue_id"],
                             "turn_id": turn_cnt,
                             "service_list": d["services"],
-                            "src": schema_slots_info + schema_intents_info + dialogue_history,
-                            "tgt": TGT_SLOT_TAG + active_slot_info + TGT_INTENT_TAG + active_intent_info
+                            "output": TGT_SLOT_TAG + active_slot_info + TGT_INTENT_TAG + active_intent_info,
+                            "instruction": INSTRUCTION_PROMPT,
+                            "input": schema_slots_info + schema_intents_info + dialogue_history + "\n" + INPUT_PROMPT
                         }
                     )
                 else:
