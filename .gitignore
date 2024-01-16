@@ -6,3 +6,5 @@ Data/MULTIWOZ20*
 __MACOSX
 __pycache__
 Checkpoint_files/original
+nohup*
+logs
