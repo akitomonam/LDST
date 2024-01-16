@@ -29,7 +29,7 @@ SGD_DATASET_CONFIG = {
 }
 
 INSTRUCTION_PROMPT = "Track the state of the slot and intent in the input dialogue."
-INPUT_PROMPT = "So the state of the slot and intent in the input dialogue is\n"
+INPUT_PROMPT = "So the state of the slot and intent in the input dialogue is"
 
 
 def create_data(data_category, data_category_type, src_schema_filename, tag_filename, src_dialogue_filename_pattern, out_dir):
