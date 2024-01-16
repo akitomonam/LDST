@@ -171,13 +171,13 @@ def create_sncd_data_from_sgdX_data():
     print(f"DATA_VARIANT_TYPE_LIST: {DATA_VARIANT_TYPE_LIST}")
     for data_variant_type in DATA_VARIANT_TYPE_LIST:
         print(f"DATA_VARIANT_TYPE: {data_variant_type}")
-        SRC_SCHEMA_FILENAME = os.path.join("SGD", data_variant_type, DATA_CATEGORY_TYPE, "schema.json")
+        SRC_SCHEMA_FILENAME = os.path.join("SGD", "sgd_x", "data", data_variant_type, DATA_CATEGORY_TYPE, "schema.json")
         TAG_FILENAME = os.path.join(HERE, "tag_name_sncd.json")
-        SRC_DIALOGUE_FILENAME_PATTERN = os.path.join("SGD", data_variant_type, DATA_CATEGORY_TYPE, "dialogues*.json")
+        SRC_DIALOGUE_FILENAME_PATTERN = os.path.join("SGD", "sgd_x", "data", data_variant_type, DATA_CATEGORY_TYPE, "dialogues*.json")
         OUT_DIR = os.path.join(HERE, "SGD_preprocess", "sgd_x", data_variant_type, DATA_CATEGORY, DATA_CATEGORY_TYPE)
         create_data(DATA_CATEGORY, DATA_CATEGORY_TYPE, SRC_SCHEMA_FILENAME, TAG_FILENAME, SRC_DIALOGUE_FILENAME_PATTERN, OUT_DIR)
 
 
 if __name__ == "__main__":
-    create_sncd_data_from_sgd_data()
-    # create_sncd_data_from_sgdX_data()
+    # create_sncd_data_from_sgd_data()
+    create_sncd_data_from_sgdX_data()
