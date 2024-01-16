@@ -50,3 +50,8 @@ class Prompter(object):
 
     def get_response(self, output: str) -> str:
         return output.split(self.template["response_split"])[1].strip()
+
+    def get_original_response(self, output: str) -> str:
+        result = output.split(self.template["response_split"])[1].strip()
+        result = result.split(self.template["my_response_split_end"])[0].strip()
+        return result
