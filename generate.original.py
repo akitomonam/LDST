@@ -11,6 +11,7 @@ from transformers import GenerationConfig, LlamaForCausalLM, LlamaTokenizer
 from tqdm import tqdm
 from utils.callbacks import Iteratorize, Stream
 from utils.prompter import Prompter
+from utils.my_logger import MyLogger
 
 if torch.cuda.is_available():
     device = "cuda"
@@ -27,6 +28,7 @@ except:  # noqa: E722
 def main(
     load_8bit: bool = True,
     base_model: str = "decapoda-research/llama-7b-hf",
+    paralell_generate_num: int = 1,
     lora_weights: str = "",
     prompt_template: str = "",  # The prompt template to use, will default to alpaca.
     server_name: str = "0.0.0.0",  # Allows to listen on all interfaces by providing '0.
@@ -114,7 +116,6 @@ def main(
         **kwargs,
     ):
         prompt = prompter.generate_prompt(instruction, input)
-        print("prompt:", prompt)
         inputs = tokenizer(prompt, return_tensors="pt")
         input_ids = inputs["input_ids"].to(device)
         generation_config = GenerationConfig(
@@ -166,53 +167,67 @@ def main(
     #     print("Response:", evaluate(instruction))
     #     print()
 
+    # loggerの準備
+    my_logger = MyLogger(__name__, "/".join(lora_weights.split("/")[-2:]))
+    logger = my_logger.logger
+
     print(f"output filename: {output_file}")
     print(f"test filename: {testfile_name}")
-    output_folder = os.path.dirname(output_file)
-    if not os.path.exists(output_folder):
-        os.makedirs(output_folder)
+    # output_folder = os.path.dirname(output_file)
+    # if not os.path.exists(output_folder):
+    #     os.makedirs(output_folder)
 
-    if not os.path.isfile(output_file):
-        result_out = open(output_file, "w", encoding='utf-8')
-        begin_id = 0
-        print("——————————————————————————————Write from scratch——————————————————————————————")
-    else:
-        with open(output_file, "r") as f:
-            lines = f.readlines()
-            begin_id = len(lines)
-            f.close()
-        print(f"——————————————————————————————Write from line {begin_id}——————————————————————————————")
-        result_out = open(output_file, "a", encoding='utf-8')
+    # if not os.path.isfile(output_file):
+    #     result_out = open(output_file, "w", encoding='utf-8')
+    #     begin_id = 0
+    #     print("——————————————————————————————Write from scratch——————————————————————————————")
+    # else:
+    #     with open(output_file, "r") as f:
+    #         lines = f.readlines()
+    #         begin_id = len(lines)
+    #         f.close()
+    #     print(f"——————————————————————————————Write from line {begin_id}——————————————————————————————")
+    #     result_out = open(output_file, "a", encoding='utf-8')
+
+    begin_id = 0
+    # result_out = open(output_file, "w", encoding='utf-8')
 
     test_files_path = os.path.join(testfile_name, "test", "dialogues_*.json")
     test_files_list = glob.glob(test_files_path)
+    # 順番に並べ替え
+    test_files_list.sort()
     print("test_files_list:", test_files_list)
     data = []
     for test_file in test_files_list:
         data += json.load(open(test_file))
 
-    # data = json.load(open(testfile_name))
-    for idx_ in tqdm(range(begin_id, len(data))):
-        sample = data[idx_]
-
-        Response_list = []
+    def gen(idx):
+        sample = data[idx]
 
         input_initial = sample['input']
 
         Response = evaluate(instruction=sample['instruction'], input=input_initial + "\n")
-        Response_list.append(Response)
 
-        print("Response list:", Response_list)
+        print("Response:", Response)
         print("Ground truth:", sample['output'])
 
-        result_out.write("src:", input_initial)
-        result_out.write("\n")
-        result_out.write("tgt:", sample['output'])
-        result_out.write("\n")
-        result_out.write("pred:", Response_list)
-        result_out.write("\n")
+        logger.info(
+            json.dumps(
+                {
+                    "dialogue_id": sample['dialogue_id'],
+                    "turn_id": sample['turn_id'],
+                    "tgt": sample['output'],
+                    "pred": Response,
+                },
+                indent=4,
+            ) + ","
+        )
 
-    result_out.close()
+    logger.info("[")
+    for idx_ in tqdm(range(begin_id, len(data))):
+        gen(idx_)
+
+    logger.info("]")
 
 
 if __name__ == "__main__":
